@@ -39,76 +39,92 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // If we are already dragging, paste the player here
-        if(PlayerManager.Instance.IsDragging)
+        // If it's a left click
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
-            PlayerSlot origin = PlayerManager.Instance.OriginSlot;
-            // We are dragging from another slot
-            if (origin != null)
+            // If we are already dragging, paste the player here
+            if (PlayerManager.Instance.IsDragging)
             {
-                // to a filled slot
-                if (_filled)
-                {
-                    // Stop the dragging
-                    Player originPlayer = PlayerManager.Instance.EndDragPlayer();
-
-                    // Fill the origin slot
-                    origin.Fill(Player);
-
-                    // Fill this slot
-                    Fill(originPlayer);
-                }
-                // to an empty slot
-                else
-                {
-                    // Stop the dragging
-                    Player player = PlayerManager.Instance.EndDragPlayer();
-
-                    // Fill the slot
-                    Fill(player);
-
-                    PlayerManager.Instance.UpdatePlayerButtonsColor();
-                }
+                Paste();
             }
-            // if we are dragging from the player list
+            // If we are not already dragging a player, start to drag this one
+            else if (_filled)
+            {
+                PlayerManager.Instance.DragPlayer(Player, this);
+                Clear();
+            }
+        }
+        else
+        {
+            // if it's a right click
+            Clear();
+
+            PlayerManager.Instance.UpdatePlayerButtonsColor();
+        }
+        
+        
+    }
+
+    private void Paste()
+    {
+        PlayerSlot origin = PlayerManager.Instance.OriginSlot;
+        // We are dragging from another slot
+        if (origin != null)
+        {
+            // to a filled slot
+            if (_filled)
+            {
+                // Stop the dragging
+                Player originPlayer = PlayerManager.Instance.EndDragPlayer();
+
+                // Fill the origin slot
+                origin.Fill(Player);
+
+                // Fill this slot
+                Fill(originPlayer);
+            }
+            // to an empty slot
             else
             {
                 // Stop the dragging
                 Player player = PlayerManager.Instance.EndDragPlayer();
 
-                // if the player was already grouped elsewhere
-                if (player.grouped)
-                {
-                    RaidManager.Instance.UnGroupPlayer(player);
-                }
+                // Fill the slot
+                Fill(player);
 
-                // to a filled slot
-                if (_filled)
-                {
-                    // Clear the slot
-                    Clear();
-
-                    // Fill the slot
-                    Fill(player);
-                }
-                // to an empty slot
-                else
-                {
-                    // Fill the slot
-                    Fill(player);
-                }
-
-                // Update the list colors
                 PlayerManager.Instance.UpdatePlayerButtonsColor();
             }
-
-            
         }
-        // If we are not already dragging a player, start to drag this one
-        else if (_filled)
+        // if we are dragging from the player list
+        else
         {
-            PlayerManager.Instance.DragPlayer(Player, this);
-            Clear();
+            // Stop the dragging
+            Player player = PlayerManager.Instance.EndDragPlayer();
+
+            // if the player was already grouped elsewhere
+            if (player.grouped)
+            {
+                RaidManager.Instance.UnGroupPlayer(player);
+            }
+
+            // to a filled slot
+            if (_filled)
+            {
+                // Clear the slot
+                Clear();
+
+                // Fill the slot
+                Fill(player);
+            }
+            // to an empty slot
+            else
+            {
+                // Fill the slot
+                Fill(player);
+            }
+
+            // Update the list colors
+            PlayerManager.Instance.UpdatePlayerButtonsColor();
         }
     }
 
