@@ -58,8 +58,6 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
         {
             // if it's a right click
             Clear();
-
-            PlayerManager.Instance.UpdatePlayerButtonsColor();
         }
         
         
@@ -155,5 +153,7 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
 
         PartyCtrl.Party.Players[slotId] = null;
         _filled = false;
+
+        PlayerManager.Instance.UpdatePlayerButtonsColor();
     }
 }

@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System;
 
-public class RaidGUICtrl : MonoBehaviour
+public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
 {
     public string Name;
     public List<GameObject> PartyGoList;
@@ -68,5 +70,10 @@ public class RaidGUICtrl : MonoBehaviour
             partyId++;
         }
         statedPartiesLoaded = true; 
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        PlayerManager.Instance.EndDragPlayer();
     }
 }
