@@ -10,6 +10,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public GameObject GhostPrefab;
     public GameObject GhostCanvas;
     public GameObject Ghost = null;
+    public PlayerSlot OriginSlot = null;
 
     public bool IsDragging = false;
     private Player DragAndDropPlayer;
@@ -19,11 +20,25 @@ public class PlayerManager : Singleton<PlayerManager>
         PlayerList.UpdatePlayerColors();
     }
 
-    public GameObject DragPlayer(Player player)
+    public GameObject DragPlayer(Player player, PlayerSlot slot = null)
     {
         DragAndDropPlayer = player;
         IsDragging = true;
         Ghost = CreateGhost();
+
+        PlayerButton ghostButton = Ghost.GetComponent<PlayerButton>();
+
+        ghostButton.Initialize(player);
+        ghostButton.IsGhost = true;
+        ghostButton.Background.color = new Color(1, 1, 1, 0.5f);
+
+        Ghost.transform.position = transform.position;
+
+        if (slot != null)
+        {
+            OriginSlot = slot;
+        }
+
         return Ghost;
     }
 
@@ -35,7 +50,7 @@ public class PlayerManager : Singleton<PlayerManager>
         return DragAndDropPlayer;
     }
 
-    public GameObject CreateGhost()
+    private GameObject CreateGhost()
     {
         GameObject ghost = GameObject.Instantiate(GhostPrefab);
         ghost.transform.SetParent(GhostCanvas.transform, false);

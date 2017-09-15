@@ -70,13 +70,6 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
             // Inform the manager that we are dragging this player and create a ghost
             GameObject ghost = PlayerManager.Instance.DragPlayer(Player);
-            PlayerButton ghostButton = ghost.GetComponent<PlayerButton>();
-
-            ghostButton.Initialize(Player);
-            ghostButton.IsGhost = true;
-            ghostButton.Background.color = new Color(1, 1, 1, 0.5f);
-
-            ghost.transform.position = transform.position;
             Ghost = ghost.gameObject;
         }
             
@@ -84,9 +77,9 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void Update()
     {
-        if (Ghost != null && !IsGhost)
+        if (IsGhost)
         {
-            Ghost.transform.position = Input.mousePosition;
+            transform.position = Input.mousePosition;
         }
     }
 }

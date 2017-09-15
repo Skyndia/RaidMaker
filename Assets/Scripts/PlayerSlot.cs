@@ -12,6 +12,7 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
     public Image ClassImage;
     public int slotId;
     public PartyGUICtrl PartyCtrl;
+    public Player Player;
 
     private bool _filled = false;
 
@@ -21,8 +22,13 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
         // Hide the image
         if (ClassImage.sprite == null)
         {
-            ClassImage.color = new Color(1, 1, 1, 0);
+            HideImage();
         }
+    }
+
+    internal void HideImage()
+    {
+        ClassImage.color = new Color(1, 1, 1, 0);
     }
 
     internal void ShowImage(Sprite classIcon)
@@ -33,28 +39,67 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        // If we are already dragging, paste the player here
         if(PlayerManager.Instance.IsDragging)
         {
-            // Stop the dragging
-            Player player = PlayerManager.Instance.EndDragPlayer();
+            if (_filled)
+            {
+                PlayerSlot origin = PlayerManager.Instance.OriginSlot;
+                if (origin != null)
+                {
+                    // Stop the dragging
+                    Player originPlayer = PlayerManager.Instance.EndDragPlayer();
 
-            // Notify the player as grouped
-            player.grouped = true;
+                    // Fill the origin slot
+                    origin.Fill(Player);
 
-            // Group the player
-            PartyCtrl.Party.Players[slotId] = player;
-            Fill(player);
+                    // Fill this slot
+                    Fill(originPlayer);
+                }
+            }
+            else
+            {
+                // Stop the dragging
+                Player player = PlayerManager.Instance.EndDragPlayer();
 
-            PlayerManager.Instance.UpdatePlayerButtonsColor();
+                // Group the slot
+                Fill(player);
+
+                PlayerManager.Instance.UpdatePlayerButtonsColor();
+            }
+            
+        }
+        // If we are not already dragging a player, start to drag this one
+        else if (_filled)
+        {
+            PlayerManager.Instance.DragPlayer(Player, this);
+            Clear();
         }
     }
 
     public void Fill(Player player)
     {
+        Player = player;
         NameText.text = player.Name;
         StatsText.text = player.GearScore.ToString();
         ShowImage(player.ClassIcon);
+        // Notify the player as grouped
+        player.grouped = true;
 
+
+        PartyCtrl.Party.Players[slotId] = player;
         _filled = true;
+    }
+
+    public void Clear()
+    {
+        Player.grouped = false;
+        Player = null;
+        NameText.text = "";
+        StatsText.text = "";
+        HideImage();
+
+        PartyCtrl.Party.Players[slotId] = null;
+        _filled = false;
     }
 }
