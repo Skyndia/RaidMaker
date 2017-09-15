@@ -26,16 +26,23 @@ public class PartyGUICtrl : MonoBehaviour
         }
     }
 
-    private void SetFieldsValues()
+    public void SetFieldsValues()
     {
         partyName.text = _party.PartyName;
 
-        for (int i = 0; i < _party.playerNb; i++)
+        for (int i = 0; i < 5; i++)
         {
             PlayerSlot playerSlot = playerSlots[i];
             Player player = _party.Players[i];
             
-            playerSlot.Fill(player);
+            if (player != null)
+            {
+                playerSlot.Fill(player);
+            }
+            else
+            {
+                playerSlot.Clear();
+            }
         }
     }
 

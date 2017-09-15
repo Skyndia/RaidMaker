@@ -44,6 +44,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public Player EndDragPlayer()
     {
+        OriginSlot = null;
         IsDragging = false;
         Destroy(Ghost);
         Ghost = null;

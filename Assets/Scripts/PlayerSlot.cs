@@ -42,10 +42,12 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
         // If we are already dragging, paste the player here
         if(PlayerManager.Instance.IsDragging)
         {
-            if (_filled)
+            PlayerSlot origin = PlayerManager.Instance.OriginSlot;
+            // We are dragging from another slot
+            if (origin != null)
             {
-                PlayerSlot origin = PlayerManager.Instance.OriginSlot;
-                if (origin != null)
+                // to a filled slot
+                if (_filled)
                 {
                     // Stop the dragging
                     Player originPlayer = PlayerManager.Instance.EndDragPlayer();
@@ -56,17 +58,50 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
                     // Fill this slot
                     Fill(originPlayer);
                 }
+                // to an empty slot
+                else
+                {
+                    // Stop the dragging
+                    Player player = PlayerManager.Instance.EndDragPlayer();
+
+                    // Fill the slot
+                    Fill(player);
+
+                    PlayerManager.Instance.UpdatePlayerButtonsColor();
+                }
             }
+            // if we are dragging from the player list
             else
             {
                 // Stop the dragging
                 Player player = PlayerManager.Instance.EndDragPlayer();
 
-                // Group the slot
-                Fill(player);
+                // if the player was already grouped elsewhere
+                if (player.grouped)
+                {
+                    RaidManager.Instance.UnGroupPlayer(player);
+                }
 
+                // to a filled slot
+                if (_filled)
+                {
+                    // Clear the slot
+                    Clear();
+
+                    // Fill the slot
+                    Fill(player);
+                }
+                // to an empty slot
+                else
+                {
+                    // Fill the slot
+                    Fill(player);
+                }
+
+                // Update the list colors
                 PlayerManager.Instance.UpdatePlayerButtonsColor();
             }
+
             
         }
         // If we are not already dragging a player, start to drag this one
@@ -93,7 +128,10 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
 
     public void Clear()
     {
-        Player.grouped = false;
+        if (Player != null)
+        {
+            Player.grouped = false;
+        }
         Player = null;
         NameText.text = "";
         StatsText.text = "";

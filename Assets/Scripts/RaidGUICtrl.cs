@@ -6,7 +6,7 @@ using UnityEngine;
 public class RaidGUICtrl : MonoBehaviour
 {
     public string Name;
-    private List<GameObject> PartyGoList;
+    public List<GameObject> PartyGoList;
     private bool statedPartiesLoaded = false;
 
     [SerializeField]
@@ -40,7 +40,7 @@ public class RaidGUICtrl : MonoBehaviour
         // For each party declared
         foreach (CellData cell in data.rows[0].cells)
         {
-            Party party = new Party(cell.value);
+            Party party = new Party(cell.value, Name);
 
             // Retrieve all the players of a party
             for(int i = 1; i < 6; i++)
