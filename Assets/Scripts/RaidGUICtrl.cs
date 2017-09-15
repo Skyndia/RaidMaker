@@ -35,6 +35,7 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
         SpreadSheetManager manager = new SpreadSheetManager();
         GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet(Name);
         WorksheetData data = worksheet.LoadAllWorksheetInformation();
+
         
         int partyId = 0;
         
@@ -42,7 +43,7 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
         // For each party declared
         foreach (CellData cell in data.rows[0].cells)
         {
-            Party party = new Party(cell.value, Name);
+            Party party = new Party(cell.value, Name, partyId);
 
             // Retrieve all the players of a party
             for(int i = 1; i < 6; i++)

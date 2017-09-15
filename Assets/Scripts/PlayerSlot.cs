@@ -35,6 +35,7 @@ public class PlayerSlot : MonoBehaviour, IPointerClickHandler
     {
         ClassImage.sprite = classIcon;
         ClassImage.color = new Color(1, 1, 1, 1);
+        ClassImage.preserveAspect = true;
     }
 
     public void OnPointerClick(PointerEventData eventData)

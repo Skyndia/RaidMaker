@@ -46,7 +46,7 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         OriginSlot = null;
         IsDragging = false;
-        Destroy(Ghost);
+        if (Ghost != null) { Destroy(Ghost); }
         Ghost = null;
         return DragAndDropPlayer;
     }

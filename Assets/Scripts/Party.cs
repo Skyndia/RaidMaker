@@ -8,6 +8,7 @@ public class Party
     public string BelongsTo;
     public Player[] Players;
     public int playerNb;
+    public int Id;
 
     public Party()
     {
@@ -15,8 +16,9 @@ public class Party
         playerNb = 0;
     }
     
-    public Party(string name, string raid)
+    public Party(string name, string raid, int id)
     {
+        Id = id;
         Players = new Player[5];
         PartyName = name;
         BelongsTo = raid;
