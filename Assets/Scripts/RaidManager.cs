@@ -106,9 +106,6 @@ public class RaidManager : Singleton<RaidManager>
 
         //worksheet.SetWorksheetSize(8, 20);
 
-        List<string> s = worksheet.GetRowTitles();
-        List<string> s1 = worksheet.GetColumnTitles();
-
         //Dictionary<string, string> dico = new Dictionary<string, string>();
         //dico.Add("P1", "coucouuuu");
         //worksheet.ModifyRowData("Attaque 1", dico);
@@ -152,5 +149,83 @@ public class RaidManager : Singleton<RaidManager>
 
         // Add the row
         worksheet.ModifyRowData(partyRowId, row);
+    }
+
+    public void LoadFromSheet()
+    {
+        // Clear each raid
+        ClearRaids();
+
+        SpreadSheetManager manager = new SpreadSheetManager();
+        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet("Save");
+        WorksheetData data = worksheet.LoadAllWorksheetInformation();
+
+        foreach (RowData row in data.rows)
+        {
+            LoadOneGroup(row);
+        }
+    }
+
+    private void LoadOneGroup(RowData row)
+    {
+        Party party = new Party();
+
+        string raid = row.rowTitle.Split(' ')[0];
+        int index = int.Parse(row.rowTitle.Split(' ')[1]);
+
+        // Create the party
+        string name = row.cells[1].value;
+        party.PartyName = name;
+        party.Id = index;
+
+        for(int i = 0; i < 5; i++)
+        {
+            string pName = row.cells[i + 2].value;
+            if (PlayerManager.Instance.playerLibrary.ContainsKey(pName))
+            {
+                Player player = PlayerManager.Instance.playerLibrary[pName];
+                party.Players[i] = player;
+            }
+        }
+
+        // Create a party game object
+        if (party.PartyName != "")
+        {
+            switch (raid)
+            {
+                case "Attaque":
+                    attackRaid.CreatePartyGo(party);
+                    break;
+
+                case "Special":
+                    specialRaid.CreatePartyGo(party);
+                    break;
+
+                case "Defense":
+                    defenseRaid.CreatePartyGo(party);
+                    break;
+            }
+        }
+    }
+
+    private void ClearRaids()
+    {
+        foreach (GameObject party in attackRaid.PartyGoList)
+        {
+            Destroy(party);
+        }
+        attackRaid.PartyGoList = new List<GameObject>();
+
+        foreach (GameObject party in specialRaid.PartyGoList)
+        {
+            Destroy(party);
+        }
+        specialRaid.PartyGoList = new List<GameObject>();
+
+        foreach (GameObject party in defenseRaid.PartyGoList)
+        {
+            Destroy(party);
+        }
+        defenseRaid.PartyGoList = new List<GameObject>();
     }
 }

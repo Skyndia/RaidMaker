@@ -17,8 +17,6 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     // If you are a ghost, there are things you're not supposed to do
     public bool IsGhost = false;
 
-    private GameObject Ghost = null;
-
     public void Initialize(Player player)
     {
         playerName.text = player.Name;
@@ -69,8 +67,7 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             }
 
             // Inform the manager that we are dragging this player and create a ghost
-            GameObject ghost = PlayerManager.Instance.DragPlayer(Player);
-            Ghost = ghost.gameObject;
+            PlayerManager.Instance.DragPlayer(Player);
         }
             
     }

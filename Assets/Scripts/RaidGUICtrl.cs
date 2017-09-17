@@ -9,7 +9,6 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
 {
     public string Name;
     public List<GameObject> PartyGoList;
-    private bool statedPartiesLoaded = false;
 
     [SerializeField]
     private GameObject partyGoPrefab;
@@ -22,15 +21,12 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
 
     public void LoadStatedParties()
     {
-        // If the stated parties were already loaded, then delete all the parties
-        if (statedPartiesLoaded)
+        // Clear the parties
+        foreach (GameObject party in PartyGoList)
         {
-            foreach (GameObject party in PartyGoList)
-            {
-                Destroy(party);
-            }
-            PartyGoList = new List<GameObject>();
+            Destroy(party);
         }
+        PartyGoList = new List<GameObject>();
 
         SpreadSheetManager manager = new SpreadSheetManager();
         GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet(Name);
@@ -59,18 +55,22 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
             }
 
             // Instanciate a gameObject for the party
-            GameObject partyGo = GameObject.Instantiate(partyGoPrefab);
-            partyGo.transform.SetParent(transform, false);
-
-            PartyGUICtrl partyGuiCtrl = partyGo.GetComponent<PartyGUICtrl>();
-            partyGuiCtrl.Party = party;
-
-            // save the party gameObject
-            PartyGoList.Add(partyGo);
+            CreatePartyGo(party);
 
             partyId++;
         }
-        statedPartiesLoaded = true; 
+    }
+
+    public void CreatePartyGo( Party party)
+    {
+        GameObject partyGo = GameObject.Instantiate(partyGoPrefab);
+        partyGo.transform.SetParent(transform, false);
+
+        PartyGUICtrl partyGuiCtrl = partyGo.GetComponent<PartyGUICtrl>();
+        partyGuiCtrl.Party = party;
+
+        // save the party gameObject
+        PartyGoList.Add(partyGo);
     }
 
     public void OnPointerClick(PointerEventData eventData)

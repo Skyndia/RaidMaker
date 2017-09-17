@@ -7,13 +7,11 @@ public class Party
     public string PartyName;
     public string BelongsTo;
     public Player[] Players;
-    public int playerNb;
     public int Id;
 
     public Party()
     {
         Players = new Player[5];
-        playerNb = 0;
     }
     
     public Party(string name, string raid, int id)
@@ -22,21 +20,13 @@ public class Party
         Players = new Player[5];
         PartyName = name;
         BelongsTo = raid;
-        playerNb = 0;
     }
 
     public void AddPlayer(Player player)
     {
-        if (playerNb < 5)
-        {
-            Players[playerNb] = player;
-            playerNb++;
-        }
-        else
-        {
-            Debug.LogError("No more space in the party " + PartyName);
-            // Should trigger an alert
-        }
+        int cpt = 0;
+        while (Players[cpt] != null && cpt < 5) { cpt++; }
+        Players[cpt] = player;
     }
 
     public int GetIndex(Player player)
