@@ -24,7 +24,7 @@ public class PlayerList : MonoBehaviour {
     private void RetrievePlayerList()
     {
         SpreadSheetManager manager = new SpreadSheetManager();
-        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet("Groupes NW");
+        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Raid Maker").LoadWorkSheet("Groupes NW");
 
         WorksheetData data = worksheet.LoadAllWorksheetInformation();
 

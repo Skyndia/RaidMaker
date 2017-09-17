@@ -24,6 +24,8 @@ public class RaidManager : Singleton<RaidManager>
         // Fix the fact that gooleSheetToUnity freeze the scene
         yield return new WaitForSeconds(0.3f);
 
+        PlayerManager.Instance.UngroupAllPlayers();
+
         attackRaid.LoadStatedParties();
         defenseRaid.LoadStatedParties();
         specialRaid.LoadStatedParties();
@@ -102,7 +104,7 @@ public class RaidManager : Singleton<RaidManager>
     private void Save()
     {
         SpreadSheetManager manager = new SpreadSheetManager();
-        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet("Save");
+        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Raid Maker").LoadWorkSheet("Save");
 
         //worksheet.SetWorksheetSize(8, 20);
 
@@ -157,7 +159,7 @@ public class RaidManager : Singleton<RaidManager>
         ClearRaids();
 
         SpreadSheetManager manager = new SpreadSheetManager();
-        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Test Raid Maker").LoadWorkSheet("Save");
+        GS2U_Worksheet worksheet = manager.LoadSpreadSheet("Raid Maker").LoadWorkSheet("Save");
         WorksheetData data = worksheet.LoadAllWorksheetInformation();
 
         foreach (RowData row in data.rows)
@@ -210,6 +212,8 @@ public class RaidManager : Singleton<RaidManager>
 
     private void ClearRaids()
     {
+        PlayerManager.Instance.UngroupAllPlayers();
+
         foreach (GameObject party in attackRaid.PartyGoList)
         {
             Destroy(party);

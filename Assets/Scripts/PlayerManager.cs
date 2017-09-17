@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,9 +29,8 @@ public class PlayerManager : Singleton<PlayerManager>
 
         PlayerButton ghostButton = Ghost.GetComponent<PlayerButton>();
 
-        ghostButton.Initialize(player);
         ghostButton.IsGhost = true;
-        ghostButton.Background.color = new Color(1, 1, 1, 0.5f);
+        ghostButton.Initialize(player);
 
         Ghost.transform.position = transform.position;
 
@@ -40,6 +40,14 @@ public class PlayerManager : Singleton<PlayerManager>
         }
 
         return Ghost;
+    }
+
+    internal void UngroupAllPlayers()
+    {
+        foreach (KeyValuePair<string, Player> player in playerLibrary)
+        {
+            player.Value.grouped = false;
+        }
     }
 
     public Player EndDragPlayer()

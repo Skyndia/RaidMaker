@@ -20,9 +20,9 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void Initialize(Player player)
     {
         playerName.text = player.Name;
-        classIcon.sprite = player.ClassIcon;
-        ApText.text = player.Ap.ToString();
-        DpText.text = player.Dp.ToString();
+        if (!IsGhost) { classIcon.sprite = player.ClassIcon; }
+        if (!IsGhost) { ApText.text = player.Ap.ToString(); }
+        if (!IsGhost) { DpText.text = player.Dp.ToString(); }
         SetAsGrouped(false);
         Player = player;
     }
@@ -45,14 +45,18 @@ public class PlayerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void SetAsGrouped(bool grouped)
     {
-        if (grouped)
+        if (!IsGhost)
         {
-            Background.color = new Color(1, 1, 1, 1);
+            if (grouped)
+            {
+                Background.color = new Color(1, 1, 1, 1);
+            }
+            else
+            {
+                Background.color = new Color(197.0f / 255.0f, 197.0f / 255.0f, 197.0f / 255.0f, 1.0f);
+            }
         }
-        else
-        {
-            Background.color = new Color(197.0f / 255.0f, 197.0f / 255.0f, 197.0f/255.0f, 1.0f);
-        }
+        
     }
 
     public void OnPointerClick(PointerEventData eventData)
