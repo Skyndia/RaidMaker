@@ -9,7 +9,7 @@ public class RaidManager : Singleton<RaidManager>
     public RaidGUICtrl attackRaid;
     public RaidGUICtrl defenseRaid;
     public RaidGUICtrl specialRaid;
-
+    
     [SerializeField]
     private GameObject LoadingCanvas;
 
@@ -35,8 +35,9 @@ public class RaidManager : Singleton<RaidManager>
         LoadingCanvas.SetActive(false);
     }
 
-    internal void UnGroupPlayer(Player player)
+    internal PartyGUICtrl FindPlayer(Player player)
     {
+        PartyGUICtrl result = null;
         bool found = false;
 
         // Look for it in the attack raid
@@ -47,9 +48,8 @@ public class RaidManager : Singleton<RaidManager>
             if (index != -1)
             {
                 found = true;
-                partyCtrl.Party.Remove(index);
-                partyCtrl.playerSlots[index].Clear();
-            }   
+                result = partyCtrl;
+            }
         }
 
         if (!found)
@@ -62,15 +62,14 @@ public class RaidManager : Singleton<RaidManager>
                 if (index != -1)
                 {
                     found = true;
-                    partyCtrl.Party.Remove(index);
-                    partyCtrl.playerSlots[index].Clear();
+                    result = partyCtrl;
                 }
             }
         }
 
         if (!found)
         {
-            // Look for it in special raid
+            // Look for it in defense raid
             foreach (GameObject partyCtrlGo in defenseRaid.PartyGoList)
             {
                 PartyGUICtrl partyCtrl = partyCtrlGo.GetComponent<PartyGUICtrl>();
@@ -78,10 +77,22 @@ public class RaidManager : Singleton<RaidManager>
                 if (index != -1)
                 {
                     found = true;
-                    partyCtrl.Party.Remove(index);
-                    partyCtrl.playerSlots[index].Clear();
+                    result = partyCtrl;
                 }
             }
+        }
+
+        return result;
+    }
+
+    internal void UnGroupPlayer(Player player)
+    {
+        PartyGUICtrl partyCtrl = FindPlayer(player);
+        if (partyCtrl != null)
+        {
+            int index = partyCtrl.Party.GetIndex(player);
+            partyCtrl.Party.Remove(index);
+            partyCtrl.playerSlots[index].Clear();
         }
     }
 
@@ -114,6 +125,14 @@ public class RaidManager : Singleton<RaidManager>
 
         //SaveOneGroup(attackRaid.PartyGoList[0].GetComponent<PartyGUICtrl>().Party, "attaque", worksheet);
 
+        // Clean
+        for(int i = 0; i < 5; i++)
+        {
+            CleanOneGroup(attackRaid.Name, i, worksheet);
+            CleanOneGroup(specialRaid.Name, i, worksheet);
+            CleanOneGroup(defenseRaid.Name, i, worksheet);
+        }
+
         foreach (GameObject partyGo in attackRaid.PartyGoList)
         {
             Party party = partyGo.GetComponent<PartyGUICtrl>().Party;
@@ -131,6 +150,22 @@ public class RaidManager : Singleton<RaidManager>
             Party party = partyGo.GetComponent<PartyGUICtrl>().Party;
             SaveOneGroup(party, defenseRaid.Name, worksheet);
         }
+    }
+
+    private void CleanOneGroup(string raid, int index, GS2U_Worksheet worksheet)
+    {
+        Dictionary<string, string> row = new Dictionary<string, string>();
+
+        row.Add("Name", "");
+        for(int i = 1; i < 6; i++)
+        {
+            row.Add("P" + i.ToString(), "");
+        }
+
+        string partyRowId = raid + " " + index;
+
+        // Add the (empty) row
+        worksheet.ModifyRowData(partyRowId, row);
     }
 
     private void SaveOneGroup(Party party, string raid, GS2U_Worksheet worksheet)
@@ -231,5 +266,28 @@ public class RaidManager : Singleton<RaidManager>
             Destroy(party);
         }
         defenseRaid.PartyGoList = new List<GameObject>();
+    }
+
+    public string GetAttackRaidName()
+    {
+        return attackRaid.Name;
+    }
+
+    public string GetSpecialRaidName()
+    {
+        return specialRaid.Name;
+    }
+
+    public string GetDefenseRaidName()
+    {
+        return defenseRaid.Name;
+    }
+
+    public void MoveParty(RaidGUICtrl oldRaid, RaidGUICtrl newRaid, PartyGUICtrl partyCtrl)
+    {
+        oldRaid.PartyGoList.Remove(partyCtrl.gameObject);
+        partyCtrl.transform.SetParent(newRaid.transform);
+        partyCtrl.RaidName = newRaid.Name;
+        newRaid.PartyGoList.Add(partyCtrl.gameObject);
     }
 }

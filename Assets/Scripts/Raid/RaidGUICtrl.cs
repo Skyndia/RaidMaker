@@ -37,27 +37,30 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
         
         // The firt row contains the parties names.
         // For each party declared
-        foreach (CellData cell in data.rows[0].cells)
+        if (data.rows.Count > 0)
         {
-            Party party = new Party(cell.value, Name, partyId);
-
-            // Retrieve all the players of a party
-            for(int i = 1; i < 6; i++)
+            foreach (CellData cell in data.rows[0].cells)
             {
-                string playerName = data.rows[i].cells[partyId * 4].value;
-                if (PlayerManager.Instance.playerLibrary.ContainsKey(playerName))
+                Party party = new Party(cell.value, Name, partyId);
+
+                // Retrieve all the players of a party
+                for (int i = 1; i < 6; i++)
                 {
-                    Player player = PlayerManager.Instance.playerLibrary[playerName];
-                    //mark the player as grouped
-                    player.grouped = true;
-                    party.AddPlayer(player);
+                    string playerName = data.rows[i].cells[partyId * 4].value;
+                    if (PlayerManager.Instance.playerLibrary.ContainsKey(playerName))
+                    {
+                        Player player = PlayerManager.Instance.playerLibrary[playerName];
+                        //mark the player as grouped
+                        player.grouped = true;
+                        party.AddPlayer(player);
+                    }
                 }
+
+                // Instanciate a gameObject for the party
+                CreatePartyGo(party);
+
+                partyId++;
             }
-
-            // Instanciate a gameObject for the party
-            CreatePartyGo(party);
-
-            partyId++;
         }
     }
 
@@ -68,6 +71,7 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
 
         PartyGUICtrl partyGuiCtrl = partyGo.GetComponent<PartyGUICtrl>();
         partyGuiCtrl.Party = party;
+        partyGuiCtrl.RaidName = Name;
 
         // save the party gameObject
         PartyGoList.Add(partyGo);
@@ -77,4 +81,5 @@ public class RaidGUICtrl : MonoBehaviour, IPointerClickHandler
     {
         PlayerManager.Instance.EndDragPlayer();
     }
+
 }
